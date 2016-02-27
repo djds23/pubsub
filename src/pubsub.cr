@@ -2,9 +2,9 @@ require "./pubsub/*"
 
 module Pubsub
   class EventBus
-    @@bus = Hash(Symbol, Array( Proc( Tuple(String), NoReturn))).new
+    @@bus = Hash(Symbol, Array( Proc( Array(String), NoReturn))).new
 
-    def self.emit(event, payload : Tuple(String))
+    def self.emit(event, payload : Array(String))
       procs = @@bus[event]
       procs.each do |pr|
         pr.call(payload)
@@ -12,7 +12,7 @@ module Pubsub
     end
 
     def self.listen(event, listener : Subscriber)
-      listener_proc = ->(payload : Tuple(String)){
+      listener_proc = ->(payload : Array(String)){
         listener.trigger(payload)
       }
 
@@ -25,6 +25,7 @@ module Pubsub
   end
 
   module Subscriber
-    abstract def trigger(payload : Tuple(String))
+    abstract def trigger(payload : Array(String))
   end
 end
+
